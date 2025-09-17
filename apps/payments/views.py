@@ -8,6 +8,7 @@ stripe.api_key = settings.STRIPE_SECRET_KEY
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.views.decorators.http import require_GET
+from django.views.decorators.csrf import csrf_exempt
 from django.contrib.sites.shortcuts import get_current_site
 
 @require_GET
@@ -27,6 +28,44 @@ def payment_cancel(request):
     return render(request, "payment_cancel.html", {
         "order_id": order_id
     })
+
+
+@csrf_exempt
+def stripe_webhook(request):
+    payload = request.body
+    sig_header = request.META.get('HTTP_STRIPE_SIGNATURE')
+    endpoint_secret = settings.STRIPE_WEBHOOK_SECRET
+
+    try:
+        event = stripe.Webhook.construct_event(payload, sig_header, endpoint_secret)
+    except ValueError:
+        return JsonResponse({'error': 'Invalid payload'}, status=400)
+    except stripe.error.SignatureVerificationError:
+        return JsonResponse({'error': 'Invalid signature'}, status=400)
+
+    if event['type'] == 'checkout.session.completed':
+        session = event['data']['object']
+        order_id = session['metadata']['order_id']
+        user_id = session['metadata']['user_id']
+
+        try:
+            order = Order.objects.get(id=order_id)
+            order.is_paid = True
+            order.save()
+
+            Payment.objects.create(
+                order=order,
+                stripe_session_id=session['id'],
+                amount=session['amount_total']/100,  # cents → dollars
+                currency=session['currency'],
+                payment_status='paid',
+                customer_email=session.get('customer_email')
+            )
+        except Order.DoesNotExist:
+            pass
+
+    return JsonResponse({'status': 'success'})
+
 
 class CreateCheckoutSessionView(BaseAPIView):
     def post(self, request, order_id):
