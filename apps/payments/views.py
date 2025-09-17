@@ -8,6 +8,7 @@ stripe.api_key = settings.STRIPE_SECRET_KEY
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.sites.shortcuts import get_current_site
 
 @csrf_exempt
 def payment_success(request):
@@ -52,10 +53,12 @@ class CreateCheckoutSessionView(BaseAPIView):
         customer_email = (
             request.data.get("email")
             or getattr(request.user, "email", None)
-            or "test@example.com"
         )
 
         try:
+            current_site = get_current_site(request)
+            protocol = 'https' if request.is_secure() else 'http'
+            
             checkout_session = stripe.checkout.Session.create(
                 payment_method_types=['card'],
                 line_items=[{
@@ -69,8 +72,8 @@ class CreateCheckoutSessionView(BaseAPIView):
                     'quantity': 1,
                 }],
                 mode='payment',
-                success_url = f"http://127.0.0.1:8000/api/v1/payments/payment-success?session_id={{CHECKOUT_SESSION_ID}}&order_id={order.id}",
-                cancel_url = f"http://127.0.0.1:8000/api/v1/payments/payment-cancel?order_id={order.id}",
+                success_url = f"{protocol}://{current_site.domain}/api/v1/payments/payment-success?session_id={{CHECKOUT_SESSION_ID}}&order_id={order.id}",
+                cancel_url = f"{protocol}://{current_site.domain}/api/v1/payments/payment-cancel?order_id={order.id}",
 
                 customer_email=customer_email,  
                 metadata={

@@ -6,6 +6,7 @@ from .serializers import (
     AssignDeliveryManSerializer, TrackingHistorySerializer
 )
 import stripe
+from django.contrib.sites.shortcuts import get_current_site
 
 
 class OrderListCreateView(BaseAPIView):
@@ -56,6 +57,9 @@ class OrderListCreateView(BaseAPIView):
                 or "test@example.com"
             )
             try:
+                current_site = get_current_site(request)
+                protocol = 'https' if request.is_secure() else 'http'
+            
                 checkout_session = stripe.checkout.Session.create(
                     payment_method_types=['card'],
                     line_items=[{
@@ -64,13 +68,13 @@ class OrderListCreateView(BaseAPIView):
                             'product_data': {
                                 'name': f"Order #{order.id}",
                             },
-                            'unit_amount': int(order.delivery_cost * 100),
+                            'unit_amount': int(order.delivery_cost * 100),  # cents
                         },
                         'quantity': 1,
                     }],
                     mode='payment',
-                    success_url = f"http://127.0.0.1:8000/api/v1/payments/payment-success?session_id={{CHECKOUT_SESSION_ID}}&order_id={order.id}",
-                    cancel_url = f"http://127.0.0.1:8000/api/v1/payments/payment-cancel?order_id={order.id}",
+                    success_url = f"{protocol}://{current_site.domain}/api/v1/payments/payment-success?session_id={{CHECKOUT_SESSION_ID}}&order_id={order.id}",
+                    cancel_url = f"{protocol}://{current_site.domain}/api/v1/payments/payment-cancel?order_id={order.id}",
                     customer_email=customer_email,
                     metadata={
                         'order_id': order.id,
