@@ -280,7 +280,7 @@ class AssignDeliveryManView(BaseAPIView):
             )
         
         # Only admin can assign delivery men
-        if not request.user.role == 'admin':
+        if not request.user.role != 'admin':
             return self.error_response(
                 message="Permission denied", 
                 data={"error": "Only administrators can assign delivery personnel"}, 
