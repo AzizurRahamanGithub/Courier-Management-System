@@ -63,6 +63,7 @@ Base URL : [https://github.com/AzizurRahamanGithub/Courier-Management-System.git
 
 | Role         | username       | Password   |
 |--------------|------------------------|------------|
+| Super User        | admin      | 0000   |
 | Admin        | admin2      | A016461a   |
 | Delivery Man |   delivery2 | A123456a|
 | User         | user1      | A123456a    |
