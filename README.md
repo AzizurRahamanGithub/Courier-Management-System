@@ -23,7 +23,7 @@ Integrated with Stripe for secure payments.
     - can view assigned orders orders.
 
   - Admin
-    - Admins can has all power.
+    - Admins has all the power.
 
 - Payments
   - Secure payments using Stripe Checkout.
