@@ -3,7 +3,8 @@ The Courier Management System is a scalable RESTful backend API built with Djang
 It allows users to place and track courier orders, delivery men to manage their assigned orders, and admins to manage the entire system.  
 Integrated with Stripe for secure payments.
 
-##
+---
+---
 
 ## Features
 - JWT Authentication { Register, Login, Profile (view and  update) }
@@ -100,6 +101,6 @@ Base URL: [https://github.com/AzizurRahamanGithub/Courier-Management-System.git]
 
 ---
 
-5. Install dependencies
+5. Run Project
    ```bash
    python manage.py runserver   
