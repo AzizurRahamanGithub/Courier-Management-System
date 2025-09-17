@@ -24,6 +24,7 @@ Integrated with Stripe for secure payments.
 
   - Admin
     - Admins has all the power.
+    - Only Admin has permission to assign delivery man
 
 - Payments
   - Secure payments using Stripe Checkout.
