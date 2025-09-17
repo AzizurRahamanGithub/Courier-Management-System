@@ -54,7 +54,7 @@ Base URL : [https://github.com/AzizurRahamanGithub/Courier-Management-System.git
 ---
 
 ## Postman Collection
-[Postman Workspace Collection](https://couriermanagement01.postman.co/workspace/Team-Workspace~03e19c91-a803-45b5-8904-1437df1eaaba/collection/48502291-5766ba6e-4390-429c-9ed6-0cbdce6e4ef3?action=share&creator=48502291&active-environment=48502291-b3206a0d-b42b-46f9-a24d-8f9e786d8d8c)
+[Postman Workspace Collection](https://drive.google.com/drive/folders/1-wq97OGBpMZR--V84AiXZDzTIVg8-RSo?usp=sharing)
 
 ---
 
