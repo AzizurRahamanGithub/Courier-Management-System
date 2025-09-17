@@ -37,6 +37,12 @@ ALLOWED_HOSTS = [
     '127.0.0.1'
 ]
 
+CSRF_TRUSTED_ORIGINS = [
+    "https://courier-management-system-yqna.onrender.com",
+    "https://www.courier-management-system-yqna.onrender.com",
+]
+
+
 AUTH_USER_MODEL = 'accounts.User'
 
 
