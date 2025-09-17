@@ -42,13 +42,13 @@ Integrated with Stripe for secure payments.
 
 ---
 
-## Live API
-Base URL: [https://courier-management-system-yqna.onrender.com/admin](  https://courier-management-system-yqna.onrender.com)
+## Live API (Remember DEBUG is TRUE)
+Base URL: [https://courier-management-system-yqna.onrender.com](  https://courier-management-system-yqna.onrender.com)
 
 ---
 
 ## Github Link
-Base URL: [https://github.com/AzizurRahamanGithub/Courier-Management-System.git]( https://github.com/AzizurRahamanGithub/Courier-Management-System.git)
+Base URL : [https://github.com/AzizurRahamanGithub/Courier-Management-System.git]( https://github.com/AzizurRahamanGithub/Courier-Management-System.git)
 
 
 ---
