@@ -7,10 +7,10 @@ from apps.orders.models import Order
 stripe.api_key = settings.STRIPE_SECRET_KEY
 from django.http import JsonResponse
 from django.shortcuts import render
-from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_GET
 from django.contrib.sites.shortcuts import get_current_site
 
-@csrf_exempt
+@require_GET
 def payment_success(request):
     order_id = request.GET.get("order_id")
     session_id = request.GET.get("session_id")
@@ -21,7 +21,7 @@ def payment_success(request):
     })
 
 
-@csrf_exempt
+@require_GET
 def payment_cancel(request):
     order_id = request.GET.get("order_id")
     return render(request, "payment_cancel.html", {
