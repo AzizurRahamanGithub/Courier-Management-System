@@ -5,6 +5,8 @@ from .serializers import (
     OrderSerializer, OrderCreateSerializer, OrderStatusUpdateSerializer,
     AssignDeliveryManSerializer, TrackingHistorySerializer
 )
+import stripe
+
 
 class OrderListCreateView(BaseAPIView):
     def get(self, request):
@@ -35,24 +37,61 @@ class OrderListCreateView(BaseAPIView):
                 message="Authentication required", 
                 status_code=status.HTTP_401_UNAUTHORIZED
             )
-            
-        if request.user.role != 'user':
+
+        if request.user.role == 'delivery_man':
             return self.error_response(
-                message="Permission denied", 
-                data={"error": "Only regular users can create orders"}, 
+                message="Order creation failed", 
+                data={"error": "Only regular users can create orders."},
                 status_code=status.HTTP_403_FORBIDDEN
             )
-            
+
         serializer = OrderCreateSerializer(data=request.data)
         if serializer.is_valid():
             order = serializer.save(user=request.user)
             response_serializer = OrderSerializer(order)
+
+            customer_email = (
+                request.data.get("email")
+                or getattr(request.user, "email", None)
+                or "test@example.com"
+            )
+            try:
+                checkout_session = stripe.checkout.Session.create(
+                    payment_method_types=['card'],
+                    line_items=[{
+                        'price_data': {
+                            'currency': 'usd',
+                            'product_data': {
+                                'name': f"Order #{order.id}",
+                            },
+                            'unit_amount': int(order.delivery_cost * 100),
+                        },
+                        'quantity': 1,
+                    }],
+                    mode='payment',
+                    success_url = f"http://127.0.0.1:8000/api/v1/payments/payment-success?session_id={{CHECKOUT_SESSION_ID}}&order_id={order.id}",
+                    cancel_url = f"http://127.0.0.1:8000/api/v1/payments/payment-cancel?order_id={order.id}",
+                    customer_email=customer_email,
+                    metadata={
+                        'order_id': order.id,
+                        'user_id': request.user.id
+                    }
+                )
+                checkout_url = checkout_session.url
+            except Exception as e:
+                checkout_url = None  
+
             return self.success_response(
-                message="Order created successfully", 
-                data=response_serializer.data, 
+                message="Order created successfully",
+                data={
+                    "order": response_serializer.data,
+                     "checkout_url": checkout_session.url,
+                    "session_id": checkout_session.id,
+                    "email": customer_email
+                },
                 status_code=status.HTTP_201_CREATED
             )
-        
+
         return self.error_response(
             message="Order creation failed", 
             data=serializer.errors, 

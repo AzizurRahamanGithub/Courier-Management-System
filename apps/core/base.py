@@ -10,7 +10,7 @@ class BaseAPIView(APIView):
                 "success": True,
                 "message": message,
                 "status_code": status_code,
-                "data": data or {}
+                "data": data if data is not None else {}
             }, 
             status=status_code
         )
@@ -21,7 +21,7 @@ class BaseAPIView(APIView):
                 "success": False,
                 "message": message,
                 "status_code": status_code,
-                "data": data or {}
+                "data": data if data is not None else {}
             }, 
             status=status_code
         )

@@ -10,4 +10,5 @@ urlpatterns = [
     path('<int:pk>/status/', OrderStatusUpdateView.as_view(), name='order-status-update'),
     path('<int:pk>/assign/', AssignDeliveryManView.as_view(), name='assign-delivery-man'),
     path('<int:pk>/tracking/', OrderTrackingView.as_view(), name='order-tracking'),
+    
 ]

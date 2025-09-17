@@ -1,11 +1,13 @@
 from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
+from rest_framework import permissions
 from apps.core.base import BaseAPIView
 from .models import User
 from .serializers import UserSerializer, UserRegistrationSerializer
 
 class UserRegistrationView(BaseAPIView):
+    permission_classes= []
     def post(self, request):
         serializer = UserRegistrationSerializer(data=request.data)
         if serializer.is_valid():
@@ -32,6 +34,7 @@ class UserRegistrationView(BaseAPIView):
 
 
 class UserLoginView(BaseAPIView):
+    permission_classes= []
     def post(self, request):
         username = request.data.get('username')
         password = request.data.get('password')
@@ -62,6 +65,37 @@ class UserLoginView(BaseAPIView):
             data={"error": "Invalid credentials"}, 
             status_code=status.HTTP_401_UNAUTHORIZED
         )
+        
+
+class UserLogoutView(BaseAPIView):
+    def post(self, request):
+        if not request.user.is_authenticated:
+            return self.error_response(
+                message="Authentication required",
+                status_code=status.HTTP_401_UNAUTHORIZED
+            )
+        
+        refresh_token = request.data.get("refresh")
+        if not refresh_token:
+            return self.error_response(
+                message="Logout failed",
+                data={"error": "Refresh token is required"},
+                status_code=status.HTTP_400_BAD_REQUEST
+            )
+        
+        try:
+            token = RefreshToken(refresh_token)
+            token.blacklist()  # blacklist the refresh token
+            return self.success_response(
+                message="Logout successful",
+                status_code=status.HTTP_200_OK
+            )
+        except Exception as e:
+            return self.error_response(
+                message="Logout failed",
+                data={"error": str(e)},
+                status_code=status.HTTP_400_BAD_REQUEST
+            )        
 
 
 class UserProfileView(BaseAPIView):
@@ -98,3 +132,4 @@ class UserProfileView(BaseAPIView):
             data=serializer.errors, 
             status_code=status.HTTP_400_BAD_REQUEST
         )
+        

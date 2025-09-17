@@ -15,7 +15,7 @@ class OrderSerializer(serializers.ModelSerializer):
 class OrderCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
-        exclude = ('delivery_man', 'status', 'is_paid')
+        exclude = ('delivery_man', 'status', 'is_paid', 'user')
 
 
 class OrderStatusUpdateSerializer(serializers.ModelSerializer):
